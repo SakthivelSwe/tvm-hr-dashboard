@@ -1,0 +1,90 @@
+<div class="tvm-container">
+  <div class="breadcrumbs">
+    <a routerLink="/dashboard">Dashboard</a><span class="sep">›</span>
+    <span>Online Editor</span>
+  </div>
+
+  <div class="ed-header card">
+    <div class="ed-header-left">
+      <div class="ed-icon"><mat-icon>edit_note</mat-icon></div>
+      <div>
+        <h1 class="ed-title">Online Editor</h1>
+        <div class="ed-sub">Edit content directly, preview and download</div>
+      </div>
+    </div>
+    <div class="ed-actions">
+      <mat-form-field appearance="outline" class="title-field">
+        <mat-label>Document Title</mat-label>
+        <input matInput [ngModel]="title()" (ngModelChange)="title.set($event)"/>
+      </mat-form-field>
+
+      <!-- Load template -->
+      <div class="dl-wrap" [class.open]="tplOpen">
+        <button class="ed-btn ed-btn-ghost" (click)="tplOpen=!tplOpen">
+          <mat-icon>library_books</mat-icon><span>Load Template</span>
+          <mat-icon class="caret">expand_more</mat-icon>
+        </button>
+        <div class="dl-panel tpl-panel" *ngIf="tplOpen" (click)="tplOpen=false">
+          <button class="dl-item" *ngFor="let t of templates()" (click)="loadSample(t.id)">
+            <span class="dl-item-icon tpl"><mat-icon>description</mat-icon></span>
+            <span class="dl-item-text">
+              <span class="dl-item-label">{{ t.name }}</span>
+              <span class="dl-item-sub">{{ t.folder }} · {{ t.dt }}</span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <button class="ed-btn ed-btn-ghost" (click)="togglePreview()">
+        <mat-icon>{{ showPreview() ? 'edit' : 'visibility' }}</mat-icon>
+        <span>{{ showPreview() ? 'Edit Mode' : 'Preview' }}</span>
+      </button>
+
+      <button class="ed-btn ed-btn-ghost ed-btn-danger" (click)="clear()">
+        <mat-icon>delete_sweep</mat-icon><span>Clear</span>
+      </button>
+
+      <!-- Download -->
+      <div class="dl-wrap" [class.open]="dlOpen">
+        <button class="ed-btn ed-btn-primary" (click)="dlOpen=!dlOpen">
+          <mat-icon>download</mat-icon>
+          <span>Download</span>
+          <mat-icon class="caret">expand_more</mat-icon>
+        </button>
+        <div class="dl-panel" *ngIf="dlOpen" (click)="dlOpen=false">
+          <button class="dl-item" (click)="downloadPdf()">
+            <span class="dl-item-icon pdf"><mat-icon>picture_as_pdf</mat-icon></span>
+            <span class="dl-item-text">
+              <span class="dl-item-label">Download as PDF</span>
+              <span class="dl-item-sub">Best for printing &amp; sharing</span>
+            </span>
+          </button>
+          <div class="dl-divider"></div>
+          <button class="dl-item" (click)="downloadDocx()">
+            <span class="dl-item-icon docx"><mat-icon>description</mat-icon></span>
+            <span class="dl-item-text">
+              <span class="dl-item-label">Download as Word</span>
+              <span class="dl-item-sub">Editable .doc (opens in Word)</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="editor-shell card">
+    <div *ngIf="!showPreview()" class="quill-container">
+      <quill-editor
+        [ngModel]="content()"
+        (ngModelChange)="content.set($event)"
+        [modules]="editorModules"
+        [styles]="{ height: '65vh' }"
+        placeholder="Start editing your document..."
+      ></quill-editor>
+    </div>
+    <div *ngIf="showPreview()" class="preview-scroll">
+      <div class="doc-preview" #preview [innerHTML]="safePreview()"></div>
+    </div>
+  </div>
+</div>
+

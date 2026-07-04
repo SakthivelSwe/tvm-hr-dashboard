@@ -1,0 +1,60 @@
+<mat-sidenav-container class="app-shell">
+  <mat-sidenav mode="side" [opened]="true" class="sidenav" [class.collapsed]="collapsed">
+    <div class="brand">
+      <img src="tvm-logo.png" alt="TVM" class="brand-logo" *ngIf="!collapsed" />
+      <div class="brand-mini" *ngIf="collapsed">TVM</div>
+      <div class="brand-text" *ngIf="!collapsed">
+        <div class="brand-title">HR Console</div>
+        <div class="brand-sub">Document Manager</div>
+      </div>
+    </div>
+
+    <nav class="nav-list">
+      <a *ngFor="let item of navItems"
+         [routerLink]="item.route"
+         routerLinkActive="active"
+         [matTooltip]="collapsed ? item.label : ''"
+         matTooltipPosition="right"
+         class="nav-item">
+        <mat-icon>{{ item.icon }}</mat-icon>
+        <span *ngIf="!collapsed">{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="side-footer" *ngIf="!collapsed">
+      <div class="hr-card">
+        <mat-icon>verified_user</mat-icon>
+        <div>
+          <div class="hr-name">HR Admin</div>
+          <div class="hr-role">Human Resources</div>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="content-wrap">
+    <mat-toolbar class="top-bar">
+      <button mat-icon-button (click)="toggle()" aria-label="toggle menu">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="app-title">TVM Infotech — HR Document Portal</span>
+      <span class="spacer"></span>
+      <div class="date-chip">
+        <mat-icon>event</mat-icon>
+        <span>{{ today | date:'EEEE, MMM d, y' }}</span>
+      </div>
+      <button mat-icon-button [matMenuTriggerFor]="userMenu" matTooltip="Account">
+        <mat-icon>account_circle</mat-icon>
+      </button>
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item disabled><mat-icon>badge</mat-icon><span>HR Admin</span></button>
+        <button mat-menu-item disabled><mat-icon>logout</mat-icon><span>Sign out</span></button>
+      </mat-menu>
+    </mat-toolbar>
+
+    <main class="page-body">
+      <router-outlet></router-outlet>
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+

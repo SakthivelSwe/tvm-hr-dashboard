@@ -1,0 +1,221 @@
+@use '@angular/material' as mat;
+@import 'quill/dist/quill.snow.css';
+
+// REQUIRED once, globally: registers CDK overlay + base Material styles.
+// Without this, popups (mat-menu, tooltips, selects, dialogs) render
+// mis-positioned at the bottom-left instead of anchored to their trigger.
+@include mat.core();
+
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: 'Inter', 'Roboto', 'Helvetica Neue', sans-serif;
+  background: #f4f6fb;
+  color: #1f2937;
+}
+* { box-sizing: border-box; }
+
+:root {
+  --tvm-navy: #1a3a7e;
+  --tvm-navy-dark: #12285a;
+  --tvm-navy-light: #2e56b8;
+  --tvm-accent: #3b82f6;
+  --tvm-gold: #f5b301;
+  --tvm-bg: #f4f6fb;
+  --tvm-card: #ffffff;
+  --tvm-border: #e5e7eb;
+  --tvm-text: #1f2937;
+  --tvm-muted: #6b7280;
+  --tvm-success: #16a34a;
+  --tvm-danger: #dc2626;
+  --tvm-shadow: 0 4px 24px rgba(26, 58, 126, 0.08);
+  --tvm-shadow-hover: 0 8px 32px rgba(26, 58, 126, 0.14);
+}
+
+// Angular Material theme (M2 API)
+$tvm-primary: mat.m2-define-palette(mat.$m2-indigo-palette, 800);
+$tvm-accent:  mat.m2-define-palette(mat.$m2-blue-palette, 500);
+$tvm-warn:    mat.m2-define-palette(mat.$m2-red-palette);
+$tvm-theme: mat.m2-define-light-theme((
+  color: (primary: $tvm-primary, accent: $tvm-accent, warn: $tvm-warn),
+  density: 0,
+  typography: mat.m2-define-typography-config($font-family: 'Inter, Roboto, sans-serif')
+));
+@include mat.all-component-themes($tvm-theme);
+
+// ── Layout helpers ─────────────────────────────────────────────────────────────
+.tvm-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 32px;
+}
+
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 16px;
+  h1 { margin: 0; font-size: 26px; font-weight: 700; color: var(--tvm-navy); letter-spacing: -0.02em; }
+  .subtitle { color: var(--tvm-muted); font-size: 14px; margin-top: 4px; }
+}
+
+// ── Card ──────────────────────────────────────────────────────────────────────
+.card {
+  background: var(--tvm-card);
+  border-radius: 16px;
+  box-shadow: var(--tvm-shadow);
+  border: 1px solid var(--tvm-border);
+  overflow: hidden;                        // keeps border-radius clean for image-top cards
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.card.clickable { cursor: pointer; }
+.card.clickable:hover { transform: translateY(-3px); box-shadow: var(--tvm-shadow-hover); }
+
+// BUG FIX ①: Header cards that have floating dropdowns must NOT clip their children.
+// Specificity (0,2,0) beats .card (0,1,0) so overflow:visible wins.
+.tf-header.card,
+.ed-header.card {
+  overflow: visible !important;
+}
+
+// ── Grid ──────────────────────────────────────────────────────────────────────
+.grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.breadcrumbs {
+  display: flex; gap: 8px; align-items: center;
+  font-size: 13px; color: var(--tvm-muted);
+  margin-bottom: 12px; flex-wrap: wrap;
+  a { color: var(--tvm-navy); text-decoration: none; font-weight: 500; }
+  a:hover { text-decoration: underline; }
+  .sep { opacity: .5; }
+}
+
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 999px;
+  background: #eef2ff; color: var(--tvm-navy);
+  font-size: 12px; font-weight: 600;
+}
+
+// ── Document preview shell ─────────────────────────────────────────────────────
+// BUG FIX ②: Removed min-height:800px (caused double-page) and reduced padding.
+.doc-preview {
+  background: white;
+  padding: 32px 40px;           // was 48px 56px — reduced for single-page fit
+  color: #000;
+  font-family: 'Times New Roman', Georgia, serif;
+  font-size: 14px;
+  line-height: 1.6;
+  box-shadow: 0 2px 16px rgba(0,0,0,.08);
+  border-radius: 4px;
+
+  h1, h2, h3 { color: var(--tvm-navy); font-family: 'Playfair Display', serif; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+  th, td { border: 1px solid #d1d5db; padding: 8px 12px; text-align: left; vertical-align: top; }
+  th { background: #eef2ff; color: var(--tvm-navy); }
+  .letterhead { text-align: center; margin-bottom: 32px; }
+  .letterhead img { height: 70px; }
+  .footer-block {
+    margin-top: 48px; padding-top: 16px;
+    border-top: 2px solid var(--tvm-navy);
+    color: var(--tvm-navy); font-size: 12px;
+  }
+  .signature { margin-top: 48px; }
+  .info-table th { text-align: left; width: 22%; }
+
+  // ── Payslip (exact single-page structure) ────────────────────────────────────
+  // BUG FIX ③: Removed min-height:1050px + flex+margin-top:auto that caused huge whitespace.
+  .payslip {
+    font-family: 'Times New Roman', Times, serif;
+    color: #000;
+    display: block;              // block — content height only, no stretch
+  }
+
+  .payslip .ps-logo {
+    text-align: center; margin: 0 0 10px;
+    // 130px wide matches the Word-embedded size → identical in browser, PDF and Word
+    img { width: 130px; height: auto; display: block; margin: 0 auto; }
+  }
+
+  .payslip .ps-title {
+    text-align: center; font-weight: 700; font-size: 14px;
+    color: #000; margin: 0 0 10px;
+    u { text-decoration: underline; }
+  }
+
+  .payslip .ps-table {
+    width: 100%; border-collapse: collapse; margin: 0;
+  }
+
+  .payslip .ps-table th,
+  .payslip .ps-table td {
+    border: 1px solid #000;
+    padding: 3px 7px;
+    font-size: 12px; font-weight: normal; color: #000;
+    background: #fff; vertical-align: middle;
+    line-height: 1.35;
+  }
+  .payslip .ps-table th { font-weight: 700; text-align: left; width: 20%; }
+  .payslip .ps-table td { width: 30%; }
+
+  // Thin navy divider bar at top of employee info table
+  .payslip .ps-blueline td {
+    background: #1a3a7e !important;
+    height: 6px; padding: 0; border-color: #1a3a7e;
+  }
+
+  .payslip .ps-ed { margin-top: 0; border-top: none; }
+  .payslip .ps-ed th, .payslip .ps-ed td { width: 25%; }
+
+  .payslip .ps-ed .ps-head th {
+    background: #1a3a7e; color: #fff;
+    text-align: center; font-weight: 700;
+    padding: 5px 8px; border-color: #1a3a7e; font-size: 13px;
+  }
+  .payslip .ps-ed .lbl { text-align: left; }
+  .payslip .ps-ed .amt { text-align: right; }
+  .payslip .ps-ed .ps-total th { font-weight: 700; background: #fff; }
+  .payslip .ps-ed .ps-net th   { font-weight: 700; background: #fff; }
+
+  .payslip .ps-signature {
+    text-align: center; font-style: italic;
+    margin: 14px 0 0; font-size: 12px; color: #000;
+  }
+
+  // Footer: natural flow, no margin-top:auto, no massive padding-top
+  .payslip .ps-footer {
+    margin-top: 18px;
+    padding-top: 10px;
+    border-top: 1.5px solid #1a3a7e;
+    font-size: 11px; color: #000;
+    line-height: 1.5;
+  }
+  .payslip .ps-company {
+    color: #1a3a7e; font-weight: 700; font-size: 13px; margin-bottom: 3px;
+  }
+  .payslip .ps-footer-details {
+    font-size: 11px; line-height: 1.6; color: #000;
+  }
+}
+
+// ── Quill editor ──────────────────────────────────────────────────────────────
+.quill-container .ql-editor { min-height: 500px; font-family: 'Times New Roman', serif; font-size: 14px; }
+.quill-container .ql-toolbar.ql-snow,
+.quill-container .ql-container.ql-snow { border-color: var(--tvm-border); }
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.empty-state {
+  text-align: center; padding: 64px 16px; color: var(--tvm-muted);
+  mat-icon { font-size: 56px; width: 56px; height: 56px; opacity: .4; }
+}
+
+@media (max-width: 720px) {
+  .tvm-container { padding: 16px; }
+  .doc-preview { padding: 20px; }
+}

@@ -1,0 +1,100 @@
+// ── Editor header card ────────────────────────────────────────────────────────
+.ed-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;
+  border-radius: 16px;
+}
+.ed-header-left { display: flex; align-items: center; gap: 14px; }
+.ed-icon {
+  width: 48px; height: 48px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: #eef2ff; color: var(--tvm-navy);
+  mat-icon { font-size: 26px; width: 26px; height: 26px; }
+}
+.ed-title { margin: 0 0 3px; font-size: 18px; font-weight: 700; color: var(--tvm-navy); }
+.ed-sub { font-size: 12px; color: var(--tvm-muted); }
+
+.ed-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.title-field { width: 210px; }
+::ng-deep .title-field .mat-mdc-form-field-subscript-wrapper { display: none; }
+
+// ── Action buttons ────────────────────────────────────────────────────────────
+.ed-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 14px; border-radius: 10px; font-size: 13px;
+  font-weight: 600; cursor: pointer; border: none; transition: all .16s ease;
+  font-family: inherit; white-space: nowrap;
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+
+  &.ed-btn-ghost {
+    background: #f3f4f6; color: var(--tvm-navy);
+    border: 1.5px solid var(--tvm-border);
+    &:hover { background: #e8ecf7; border-color: var(--tvm-navy-light); }
+  }
+  &.ed-btn-primary {
+    background: var(--tvm-navy); color: #fff;
+    box-shadow: 0 4px 14px rgba(26,58,126,.25);
+    &:hover { background: var(--tvm-navy-light); }
+    .caret { margin-left: 2px; transition: transform .18s; }
+  }
+  &.ed-btn-danger:hover { background: #fee2e2; border-color: #fca5a5; color: #dc2626; }
+}
+
+// ── Dropdown (shared) ─────────────────────────────────────────────────────────
+.dl-wrap {
+  position: relative;
+  &.open .caret { transform: rotate(180deg); }
+}
+
+.dl-panel {
+  position: absolute; top: calc(100% + 8px); right: 0;
+  width: 260px; z-index: 999;
+  background: #fff; border-radius: 14px;
+  border: 1px solid var(--tvm-border);
+  box-shadow: 0 12px 40px rgba(26,58,126,.18);
+  padding: 8px;
+  animation: dlSlide .16s ease;
+}
+.tpl-panel { width: 300px; max-height: 350px; overflow-y: auto; }
+
+@keyframes dlSlide {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dl-divider { height: 1px; background: var(--tvm-border); margin: 4px 0; }
+
+.dl-item {
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; padding: 10px 12px; border-radius: 10px;
+  background: transparent; border: none; cursor: pointer;
+  text-align: left; transition: background .15s; font-family: inherit;
+  &:hover { background: #f0f4ff; }
+}
+.dl-item-icon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+  &.pdf  { background: #fee2e2; color: #dc2626; }
+  &.docx { background: #dbeafe; color: #1d4ed8; }
+  &.tpl  { background: #ecfdf5; color: #047857; }
+}
+.dl-item-text { display: flex; flex-direction: column; gap: 2px; }
+.dl-item-label { font-size: 13px; font-weight: 600; color: var(--tvm-navy); }
+.dl-item-sub   { font-size: 11px; color: var(--tvm-muted); }
+
+// ── Editor shell ──────────────────────────────────────────────────────────────
+.editor-shell { padding: 0; overflow: hidden; }
+.quill-container { padding: 0; }
+::ng-deep .quill-container .ql-toolbar {
+  background: #fafbff; border-color: var(--tvm-border);
+  border-top-left-radius: 16px; border-top-right-radius: 16px;
+}
+::ng-deep .quill-container .ql-container { border-color: var(--tvm-border); }
+
+.preview-scroll {
+  background: #eef2f7; padding: 24px;
+  display: flex; justify-content: center; max-height: 75vh; overflow: auto;
+}
+.doc-preview { max-width: 794px; width: 100%; }

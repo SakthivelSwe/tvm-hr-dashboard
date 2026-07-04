@@ -1,0 +1,104 @@
+<div class="tvm-container" *ngIf="template && folder && dtInfo; else nf">
+  <div class="breadcrumbs">
+    <a routerLink="/dashboard">Dashboard</a><span class="sep">›</span>
+    <a routerLink="/folders">Folders</a><span class="sep">›</span>
+    <a [routerLink]="['/folders', folder.slug]">{{ folder.name }}</a><span class="sep">›</span>
+    <a [routerLink]="['/folders', folder.slug, dtInfo.slug]">{{ dtInfo.label }}</a><span class="sep">›</span>
+    <span>{{ template.name }}</span>
+  </div>
+
+  <div class="tf-header card">
+    <div class="tf-header-left">
+      <div class="tf-icon" [style.background]="dtInfo.color + '18'" [style.color]="dtInfo.color">
+        <mat-icon>{{ dtInfo.icon }}</mat-icon>
+      </div>
+      <div>
+        <h1 class="tf-title">{{ template.name }}</h1>
+        <div class="tf-sub">
+          <mat-icon>business</mat-icon>{{ folder.fullName }}
+          <span class="tf-sep">·</span>
+          <mat-icon>category</mat-icon>{{ dtInfo.label }}
+        </div>
+      </div>
+    </div>
+    <div class="tf-actions">
+      <button class="tf-btn tf-btn-ghost" (click)="reset()">
+        <mat-icon>refresh</mat-icon><span>Reset</span>
+      </button>
+      <button class="tf-btn tf-btn-ghost" (click)="openInEditor()">
+        <mat-icon>edit_note</mat-icon><span>Open in Editor</span>
+      </button>
+      <div class="dl-wrap" [class.open]="dlOpen">
+        <button class="tf-btn tf-btn-primary" (click)="dlOpen=!dlOpen">
+          <mat-icon>download</mat-icon>
+          <span>Download</span>
+          <mat-icon class="caret">expand_more</mat-icon>
+        </button>
+        <div class="dl-panel" *ngIf="dlOpen" (click)="dlOpen=false">
+          <button class="dl-item" (click)="downloadPdf()">
+            <span class="dl-item-icon pdf"><mat-icon>picture_as_pdf</mat-icon></span>
+            <span class="dl-item-text">
+              <span class="dl-item-label">Download as PDF</span>
+              <span class="dl-item-sub">Best for printing &amp; sharing</span>
+            </span>
+          </button>
+          <div class="dl-divider"></div>
+          <button class="dl-item" (click)="downloadDocx()">
+            <span class="dl-item-icon docx"><mat-icon>description</mat-icon></span>
+            <span class="dl-item-text">
+              <span class="dl-item-label">Download as Word</span>
+              <span class="dl-item-sub">Editable .doc (opens in Word)</span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="split">
+    <aside class="fields-pane card">
+      <div class="pane-header"><mat-icon>tune</mat-icon> Edit Fields</div>
+      <div class="groups">
+        <details *ngFor="let g of groups(); let i = index" [open]="i < 3" class="group">
+          <summary>{{ g.name }} <span>({{ g.fields.length }})</span></summary>
+          <div class="fields">
+            <mat-form-field appearance="outline" class="w-full"
+              *ngFor="let f of g.fields"
+              [class.wide]="f.type === 'textarea'">
+              <mat-label>{{ f.label }}</mat-label>
+              <input *ngIf="f.type === 'text' || f.type === 'currency'" matInput
+                [ngModel]="values()[f.key]"
+                (ngModelChange)="update(f.key, $event)"
+                [placeholder]="f.hint || ''"/>
+              <input *ngIf="f.type === 'number'" matInput type="number"
+                [ngModel]="values()[f.key]"
+                (ngModelChange)="update(f.key, $event)"/>
+              <input *ngIf="f.type === 'date'" matInput type="date"
+                [ngModel]="values()[f.key]"
+                (ngModelChange)="update(f.key, $event)"/>
+              <textarea *ngIf="f.type === 'textarea'" matInput rows="3"
+                [ngModel]="values()[f.key]"
+                (ngModelChange)="update(f.key, $event)"></textarea>
+              <mat-hint *ngIf="f.hint">{{ f.hint }}</mat-hint>
+            </mat-form-field>
+          </div>
+        </details>
+      </div>
+    </aside>
+
+    <section class="preview-pane">
+      <div class="pane-header"><mat-icon>visibility</mat-icon> Live Preview</div>
+      <div class="preview-wrap">
+        <div class="doc-preview" #preview [innerHTML]="rendered()"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<ng-template #nf>
+  <div class="tvm-container empty-state">
+    <mat-icon>error_outline</mat-icon><h2>Template not found</h2>
+    <a mat-raised-button color="primary" routerLink="/folders">Back</a>
+  </div>
+</ng-template>
+

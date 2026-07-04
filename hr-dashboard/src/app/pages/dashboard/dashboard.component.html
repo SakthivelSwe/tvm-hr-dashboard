@@ -1,0 +1,82 @@
+<div class="tvm-container">
+  <section class="hero">
+    <div class="hero-text">
+      <span class="pill"><mat-icon>bolt</mat-icon> HR Console</span>
+      <h1>Welcome back, HR Admin</h1>
+      <p>Manage your company document templates — Offer Letters, Relieving Letters, Service Letters and Payslips — all from one modern workspace.</p>
+      <div class="hero-actions">
+        <a mat-raised-button color="primary" routerLink="/folders">
+          <mat-icon>folder_open</mat-icon> Open Company Folders
+        </a>
+        <a mat-stroked-button routerLink="/upload">
+          <mat-icon>upload_file</mat-icon> Upload Document
+        </a>
+      </div>
+    </div>
+    <div class="hero-illustration">
+      <div class="stack-card c1"><mat-icon>description</mat-icon></div>
+      <div class="stack-card c2"><mat-icon>receipt_long</mat-icon></div>
+      <div class="stack-card c3"><mat-icon>workspace_premium</mat-icon></div>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#eef2ff;color:#1a3a7e"><mat-icon>business</mat-icon></div>
+      <div><div class="stat-value">{{ folders.length }}</div><div class="stat-label">Company Folders</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#ecfeff;color:#0f766e"><mat-icon>category</mat-icon></div>
+      <div><div class="stat-value">4</div><div class="stat-label">Document Types</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fef3c7;color:#a16207"><mat-icon>description</mat-icon></div>
+      <div><div class="stat-value">{{ totalTemplates }}</div><div class="stat-label">Ready Templates</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fee2e2;color:#dc2626"><mat-icon>verified</mat-icon></div>
+      <div><div class="stat-value">HR</div><div class="stat-label">Access Role</div></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="page-header">
+      <div><h1 style="font-size:20px">Quick Actions</h1><div class="subtitle">Jump straight to what you need</div></div>
+    </div>
+    <div class="grid">
+      <a *ngFor="let q of quickActions" [routerLink]="q.route" class="card clickable action-card">
+        <div class="action-icon" [style.background]="q.color + '15'" [style.color]="q.color">
+          <mat-icon>{{ q.icon }}</mat-icon>
+        </div>
+        <div class="action-body">
+          <div class="action-title">{{ q.title }}</div>
+          <div class="action-desc">{{ q.desc }}</div>
+        </div>
+        <mat-icon class="arrow">chevron_right</mat-icon>
+      </a>
+    </div>
+  </section>
+
+  <section style="margin-top:32px">
+    <div class="page-header">
+      <div><h1 style="font-size:20px">Company Folders</h1><div class="subtitle">Static templates ready for editing &amp; download</div></div>
+      <a mat-button color="primary" routerLink="/folders">View all <mat-icon>arrow_forward</mat-icon></a>
+    </div>
+    <div class="grid">
+      <a *ngFor="let f of folders" [routerLink]="['/folders', f.slug]" class="card clickable folder-card">
+        <div class="folder-strip" [style.background]="f.color"></div>
+        <div class="folder-body">
+          <div class="folder-title">
+            <mat-icon [style.color]="f.color">folder</mat-icon>
+            <span>{{ f.name }}</span>
+          </div>
+          <div class="folder-full">{{ f.fullName }}</div>
+          <div class="folder-tags">
+            <span class="badge" *ngFor="let d of f.docTypes">{{ d.label }}</span>
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+</div>
+
